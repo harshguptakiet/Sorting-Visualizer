@@ -1,28 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
   <link rel="stylesheet" href="./css/style.css" />
-  <title>Sorting visualizer</title>
+  <title>Sorting Visualizer • Interactive Algorithm Dashboard</title>
 </head>
-
 <body>
-  <div class="nav-container">
-    <h2 class="title" onclick="window.location.reload()">
-      Sorting visualizer
-    </h2>
-    <div class="navbar" id="navbar">
-      <a id="random" onclick="RenderScreen()">Generate array</a>
-      <span class="options">
-        <select name="select sort algorithm" id="menu" class="algo-menu">
+  <div class="auth-bar">
+    <span id="userEmail" class="user-email" title="View your analytics"></span>
+    <button id="logoutBtn" type="button" class="logout-btn">Logout</button>
+  </div>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="logo">
+          <i class="fas fa-chart-bar"></i>
+          <span>Sorting Visualizer</span>
+        </h1>
+        <div class="header-info">
+          <span class="algo-badge" id="current-algo">Select Algorithm</span>
+          <span class="status-indicator" id="status">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+      <div class="control-group">
+        <label for="algo" class="control-label">
+          <i class="fas fa-code-branch"></i>
+          Algorithm
+        </label>
+        <select id="algo" class="algo-menu control-select">
           <option value="0">Choose algorithm</option>
           <option value="1">Bubble Sort</option>
           <option value="2">Selection Sort</option>
@@ -30,15 +46,17 @@
           <option value="4">Merge Sort</option>
           <option value="5">Quick Sort</option>
         </select>
-      </span>
-      <span class="options">
-        <select name="select array size" id="menu" class="size-menu">
-          <option value="0">Array size</option>
-          <option value="5">5</option>
+      </div>
+
+      <div class="control-group">
+        <label for="size" class="control-label">
+          <i class="fas fa-sliders-h"></i>
+          Array Size
+        </label>
+        <select id="size" class="size-menu control-select">
           <option value="10">10</option>
-          <option value="15">15</option>
           <option value="20">20</option>
-          <option value="30">30</option>
+          <option value="30" selected>30</option>
           <option value="40">40</option>
           <option value="50">50</option>
           <option value="60">60</option>
@@ -47,31 +65,119 @@
           <option value="90">90</option>
           <option value="100">100</option>
         </select>
-      </span>
-      <span class="options">
-        <select name="speed of visualization" id="menu" class="speed-menu">
-          <option value="0">Speed</option>
+      </div>
+
+      <div class="control-group">
+        <label for="speed" class="control-label">
+          <i class="fas fa-tachometer-alt"></i>
+          Speed
+        </label>
+        <select id="speed" class="speed-menu control-select">
           <option value="0.5">0.50x</option>
           <option value="0.75">0.75x</option>
-          <option value="1">1.00x</option>
+          <option value="1" selected>1.00x</option>
           <option value="2">2.00x</option>
           <option value="4">4.00x</option>
         </select>
-      </span>
-      <a class="start">Sort</a>
-      <a class="icon"><i class="fa fa-bars"></i></a>
+      </div>
+
+      <div class="control-actions">
+        <button id="random" type="button" class="btn btn-secondary">
+          <i class="fas fa-random"></i>
+          Generate New
+        </button>
+        <button class="start btn btn-primary" type="button">
+          <i class="fas fa-play"></i>
+          Start Sort
+        </button>
+      </div>
     </div>
+
+    <!-- Visualization Area -->
+    <main class="visualization-area">
+      <div class="array-container">
+        <div class="array"></div>
+      </div>
+    </main>
+
+    <!-- Stats Panel -->
+    <div class="stats-panel">
+      <div class="stat-item">
+        <span class="stat-label">Comparisons</span>
+        <span class="stat-value" id="comparisons">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Swaps</span>
+        <span class="stat-value" id="swaps">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Time</span>
+        <span class="stat-value" id="time">0.0s</span>
+      </div>
+    </div>
+
+    <!-- User Analytics Panel (hidden toggle) -->
+    <div class="user-analytics-panel" id="userAnalyticsPanel" aria-hidden="true">
+      <h2 class="panel-title"><i class="fas fa-user-chart"></i> Your Analytics</h2>
+      <div class="user-analytics-grid">
+        <div class="ua-item">
+          <span class="ua-label">Total Sorts</span>
+          <span class="ua-value" id="ua-total-sorts">0</span>
+        </div>
+        <div class="ua-item">
+          <span class="ua-label">Total Comparisons</span>
+          <span class="ua-value" id="ua-total-comparisons">0</span>
+        </div>
+        <div class="ua-item">
+          <span class="ua-label">Total Swaps</span>
+          <span class="ua-value" id="ua-total-swaps">0</span>
+        </div>
+        <div class="ua-item">
+          <span class="ua-label">Cumulative Time</span>
+          <span class="ua-value" id="ua-total-time">0.0s</span>
+        </div>
+      </div>
+      <div class="algo-usage">
+        <h3 class="sub-title">Algorithm Usage</h3>
+        <div class="algo-usage-grid">
+          <div class="algo-usage-item"><span>Bubble</span><span id="ua-algo-bubble">0</span></div>
+          <div class="algo-usage-item"><span>Selection</span><span id="ua-algo-selection">0</span></div>
+          <div class="algo-usage-item"><span>Insertion</span><span id="ua-algo-insertion">0</span></div>
+          <div class="algo-usage-item"><span>Merge</span><span id="ua-algo-merge">0</span></div>
+          <div class="algo-usage-item"><span>Quick</span><span id="ua-algo-quick">0</span></div>
+        </div>
+      </div>
+      <div class="ua-note">Stats aggregate per account across sessions.</div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-color current"></span>
+        <span>🔄 Comparing (Gold)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color visited"></span>
+        <span>👁️ Visited (Purple)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color min"></span>
+        <span>⚡ Minimum (Red)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color done"></span>
+        <span>✅ Sorted (Green)</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Created by <strong>Harsh</strong> • <a href="https://github.com/harshguptakiet/Sorting-Visualizer" target="_blank" rel="noopener"><i class="fab fa-github"></i> View on GitHub</a></p>
+    </footer>
   </div>
-  <div class="center">
-    <div class="array"></div>
-  </div>
-  <footer class="footer">
-    <p>Created By - Harsh</p>
-    
-  </footer>
+
   <script src="./scripts/app.js"></script>
   <script src="./scripts/helper.js"></script>
   <script src="./scripts/sort-algorithms.js"></script>
 </body>
-
 </html>

@@ -1,0 +1,4 @@
+# Ignore Node.js dependencies
+node_modules/
+server/node_modules/
+sorting-visualizer/node_modules/

@@ -1,0 +1,17 @@
+{
+  "name": "sorting-visualizer-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.19.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.7.0"
+  }
+}
